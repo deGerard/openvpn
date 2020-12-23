@@ -1514,6 +1514,7 @@ do_init_route_list(const struct options *options,
     const char *gw = NULL;
     int dev = dev_type_enum(options->dev, options->dev_type);
     int metric = 0;
+    int table = 0;
 
     if (dev == DEV_TYPE_TUN && (options->topology == TOP_NET30 || options->topology == TOP_P2P))
     {
@@ -1527,11 +1528,16 @@ do_init_route_list(const struct options *options,
     {
         metric = options->route_default_metric;
     }
+    if (options->route_default_table)
+    {
+        table = options->route_default_table;
+    }
 
     if (init_route_list(route_list,
                         options->routes,
                         gw,
                         metric,
+                        table,
                         link_socket_current_remote(link_socket_info),
                         es,
                         ctx))

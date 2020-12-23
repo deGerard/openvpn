@@ -423,6 +423,14 @@ init_route(struct route_ipv4 *r,
         r->flags |= RT_METRIC_DEFINED;
     }
 
+    /* table */
+    r->table = 0;
+    if (rl->spec.flags & RTSA_DEFAULT_TABLE)
+    {
+        r->table = rl->spec.default_table;
+        r->flags |= RT_TABLE_DEFINED;
+    }
+
     r->flags |= RT_DEFINED;
 
     return true;
@@ -616,6 +624,7 @@ init_route_list(struct route_list *rl,
                 const struct route_option_list *opt,
                 const char *remote_endpoint,
                 int default_metric,
+                int default_table,
                 in_addr_t remote_host,
                 struct env_set *es,
                 openvpn_net_ctx_t *ctx)
@@ -637,6 +646,12 @@ init_route_list(struct route_list *rl,
     {
         rl->spec.default_metric = default_metric;
         rl->spec.flags |= RTSA_DEFAULT_METRIC;
+    }
+
+    if (default_table)
+    {
+        rl->spec.default_table = default_table;
+        rl->spec.flags |= RTSA_DEFAULT_TABLE;
     }
 
     get_default_gateway(&rl->rgi, ctx);
@@ -1065,25 +1080,24 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt,
             {
                 if (rl->flags & RG_DEF1)
                 {
+                    struct route_ipv4 r;
+                    CLEAR(r);
                     /* add new default route (1st component) */
-                    add_route3(0x00000000,
-                               0x80000000,
-                               rl->spec.remote_endpoint,
-                               tt,
-                               flags,
-                               &rl->rgi,
-                               es,
-                               ctx);
+                    r.flags = RT_DEFINED;
+                    if (rl->spec.flags & RTSA_DEFAULT_TABLE)
+                    {
+                        r.table = rl->spec.default_table;
+                        r.flags |= RT_TABLE_DEFINED;
+                    }
 
+                    r.network = 0x00000000;
+                    r.netmask = 0x80000000;
+                    r.gateway = rl->spec.remote_endpoint;
+                    add_route(&r, tt, flags, &rl->rgi, es, ctx);
+                    r.flags&= ~RT_ADDED;
                     /* add new default route (2nd component) */
-                    add_route3(0x80000000,
-                               0x80000000,
-                               rl->spec.remote_endpoint,
-                               tt,
-                               flags,
-                               &rl->rgi,
-                               es,
-                               ctx);
+                    r.network = 0x80000000;
+                    add_route(&r, tt, flags, &rl->rgi, es, ctx);
                 }
                 else
                 {
@@ -1143,25 +1157,25 @@ undo_redirect_default_route_to_vpn(struct route_list *rl,
         {
             if (rl->flags & RG_DEF1)
             {
+                struct route_ipv4 r;
+                CLEAR(r);
                 /* delete default route (1st component) */
-                del_route3(0x00000000,
-                           0x80000000,
-                           rl->spec.remote_endpoint,
-                           tt,
-                           flags,
-                           &rl->rgi,
-                           es,
-                           ctx);
+                r.flags = RT_DEFINED|RT_ADDED;
+                if (rl->spec.flags & RTSA_DEFAULT_TABLE)
+                {
+                    r.table = rl->spec.default_table;
+                    r.flags |= RT_TABLE_DEFINED;
+                }
+
+                r.network = 0x00000000;
+                r.netmask = 0x80000000;
+                r.gateway = rl->spec.remote_endpoint;
+                delete_route(&r, tt, flags, &rl->rgi, es, ctx);
 
                 /* delete default route (2nd component) */
-                del_route3(0x80000000,
-                           0x80000000,
-                           rl->spec.remote_endpoint,
-                           tt,
-                           flags,
-                           &rl->rgi,
-                           es,
-                           ctx);
+                r.flags|= RT_ADDED;
+                r.network = 0x80000000;
+                delete_route(&r, tt, flags, &rl->rgi, es, ctx);
             }
             else
             {
