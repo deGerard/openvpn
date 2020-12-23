@@ -63,6 +63,7 @@ struct route_special_addr
 #define RTSA_REMOTE_ENDPOINT  (1<<0)
 #define RTSA_REMOTE_HOST      (1<<1)
 #define RTSA_DEFAULT_METRIC   (1<<2)
+#define RTSA_DEFAULT_TABLE    (1<<3)
     unsigned int flags;
 
     in_addr_t remote_endpoint;
@@ -70,6 +71,7 @@ struct route_special_addr
     int remote_host_local; /* TLA_x value */
     struct route_bypass bypass;
     int default_metric;
+    int default_table;
 };
 
 struct route_option {
@@ -288,6 +290,7 @@ bool init_route_list(struct route_list *rl,
                      const struct route_option_list *opt,
                      const char *remote_endpoint,
                      int default_metric,
+                     int default_table,
                      in_addr_t remote_host,
                      struct env_set *es,
                      openvpn_net_ctx_t *ctx);

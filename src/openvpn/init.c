@@ -1413,6 +1413,7 @@ do_init_route_list(const struct options *options,
     const char *gw = NULL;
     int dev = dev_type_enum(options->dev, options->dev_type);
     int metric = 0;
+    int table = 0;
 
     /* if DCO is enabled we have both regular routes and iroutes in the system
      * routing table, and normal routes must have a higher metric for that to
@@ -1435,11 +1436,16 @@ do_init_route_list(const struct options *options,
     {
         metric = options->route_default_metric;
     }
+    if (options->route_default_table)
+    {
+        table = options->route_default_table;
+    }
 
     if (init_route_list(route_list,
                         options->routes,
                         gw,
                         metric,
+                        table,
                         link_socket_current_remote(link_socket_info),
                         es,
                         ctx))
