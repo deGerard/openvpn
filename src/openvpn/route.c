@@ -1598,6 +1598,7 @@ add_route(struct route_ipv4 *r,
 #if defined(TARGET_LINUX)
     const char *iface = NULL;
     int metric = -1;
+    int table = 0;
 
     if (is_on_link(is_local_route, flags, rgi))
     {
@@ -1609,9 +1610,14 @@ add_route(struct route_ipv4 *r,
         metric = r->metric;
     }
 
+    if (r->flags & RT_TABLE_DEFINED)
+    {
+        table = r->table;
+    }
+
     status = true;
     if (net_route_v4_add(ctx, &r->network, netmask_to_netbits2(r->netmask),
-                         &r->gateway, iface, 0, metric) < 0)
+                         &r->gateway, iface, table, metric) < 0)
     {
         msg(M_WARN, "ERROR: Linux route add command failed");
         status = false;
@@ -1946,14 +1952,20 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
 
 #if defined(TARGET_LINUX)
     int metric = -1;
+    int table = 0;
     if ((r6->flags & RT_METRIC_DEFINED) && (r6->metric > 0))
     {
         metric = r6->metric;
     }
 
+    if (r6->flags & RT_TABLE_DEFINED)
+    {
+        table = r6->table;
+    }
+
     status = true;
     if (net_route_v6_add(ctx, &r6->network, r6->netbits,
-                         gateway_needed ? &r6->gateway : NULL, device, 0,
+                         gateway_needed ? &r6->gateway : NULL, device, table,
                          metric) < 0)
     {
         msg(M_WARN, "ERROR: Linux IPv6 route can't be added");
@@ -2157,6 +2169,7 @@ delete_route(struct route_ipv4 *r,
 #endif
 #else  /* if !defined(TARGET_LINUX) */
     int metric;
+    int table;
 #endif
     int is_local_route;
 
@@ -2185,13 +2198,19 @@ delete_route(struct route_ipv4 *r,
 
 #if defined(TARGET_LINUX)
     metric = -1;
+    table = 0;
     if (r->flags & RT_METRIC_DEFINED)
     {
         metric = r->metric;
     }
 
+    if (r->flags & RT_TABLE_DEFINED)
+    {
+        table = r->table;
+    }
+
     if (net_route_v4_del(ctx, &r->network, netmask_to_netbits2(r->netmask),
-                         &r->gateway, NULL, 0, metric) < 0)
+                         &r->gateway, NULL, table, metric) < 0)
     {
         msg(M_WARN, "ERROR: Linux route delete command failed");
     }
@@ -2343,6 +2362,7 @@ delete_route_ipv6(const struct route_ipv6 *r6, const struct tuntap *tt,
     const char *gateway;
 #else
     int metric;
+    int table;
 #endif
     bool gateway_needed = false;
 
@@ -2398,13 +2418,19 @@ delete_route_ipv6(const struct route_ipv6 *r6, const struct tuntap *tt,
 
 #if defined(TARGET_LINUX)
     metric = -1;
+    table = 0;
     if ((r6->flags & RT_METRIC_DEFINED) && (r6->metric > 0))
     {
         metric = r6->metric;
     }
 
+    if (r6->flags & RT_TABLE_DEFINED)
+    {
+        table = r6->table;
+    }
+
     if (net_route_v6_del(ctx, &r6->network, r6->netbits,
-                         gateway_needed ? &r6->gateway : NULL, device, 0,
+                         gateway_needed ? &r6->gateway : NULL, device, table,
                          metric) < 0)
     {
         msg(M_WARN, "ERROR: Linux route v6 delete command failed");
