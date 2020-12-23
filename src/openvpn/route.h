@@ -113,6 +113,7 @@ struct route_ipv4 {
 #define RT_DEFINED        (1<<0)
 #define RT_ADDED          (1<<1)
 #define RT_METRIC_DEFINED (1<<2)
+#define RT_TABLE_DEFINED  (1<<3)
     struct route_ipv4 *next;
     unsigned int flags;
     const struct route_option *option;
@@ -120,6 +121,7 @@ struct route_ipv4 {
     in_addr_t netmask;
     in_addr_t gateway;
     int metric;
+    int table;
 };
 
 struct route_ipv6 {
@@ -129,6 +131,7 @@ struct route_ipv6 {
     unsigned int netbits;
     struct in6_addr gateway;
     int metric;
+    int table;
     /* gateway interface */
 #ifdef _WIN32
     DWORD adapter_index;        /* interface or ~0 if undefined */

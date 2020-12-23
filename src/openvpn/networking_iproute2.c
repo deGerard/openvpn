@@ -227,6 +227,11 @@ net_route_v4_add(openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixlen,
         argv_printf_cat(&argv, "via %s", gw_str);
     }
 
+    if (table > 0)
+    {
+        argv_printf_cat(&argv, "table %d", table);
+    }
+
     argv_msg(D_ROUTE, &argv);
     openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route add command failed");
 
@@ -258,6 +263,11 @@ net_route_v6_add(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,
         argv_printf_cat(&argv, "metric %d", metric);
     }
 
+    if (table > 0)
+    {
+        argv_printf_cat(&argv, "table %d", table);
+    }
+
     argv_msg(D_ROUTE, &argv);
     openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route -6 add command failed");
 
@@ -279,6 +289,11 @@ net_route_v4_del(openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixlen,
     if (metric > 0)
     {
         argv_printf_cat(&argv, "metric %d", metric);
+    }
+
+    if (table > 0)
+    {
+        argv_printf_cat(&argv, "table %d", table);
     }
 
     argv_msg(D_ROUTE, &argv);
@@ -310,6 +325,11 @@ net_route_v6_del(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,
     if (metric > 0)
     {
         argv_printf_cat(&argv, "metric %d", metric);
+    }
+
+    if (table > 0)
+    {
+        argv_printf_cat(&argv, "table %d", table);
     }
 
     argv_msg(D_ROUTE, &argv);
