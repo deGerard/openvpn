@@ -52,6 +52,8 @@
 
 #include "crypto_backend.h"
 
+#include "mcast.h"
+
 /*#define MULTI_DEBUG_EVENT_LOOP*/
 
 #ifdef MULTI_DEBUG_EVENT_LOOP
@@ -379,6 +381,11 @@ multi_init(struct multi_context *m, struct context *t, bool tcp_mode, int thread
     m->mbuf = mbuf_init(t->options.n_bcast_buf);
 
     /*
+     * Initialize the mcast group_maps.
+     */
+    mcast_init(m);
+
+    /*
      * Different status file format options are available
      */
     m->status_file_version = t->options.status_file_version;
@@ -659,6 +666,8 @@ multi_close_instance(struct multi_context *m,
 
         schedule_remove_entry(m->schedule, (struct schedule_entry *) mi);
 
+        mcast_disconnect(m, mi);
+
         ifconfig_pool_release(m->ifconfig_pool, mi->vaddr_handle, false);
 
         if (mi->did_iroutes)
@@ -774,6 +783,7 @@ multi_create_instance(struct multi_context *m, const struct mroute_addr *real)
     multi_instance_inc_refcount(mi);
     mi->vaddr_handle = -1;
     mi->created = now;
+    mi->mcast_timeouts = NULL;
     mroute_addr_init(&mi->real);
 
     if (real)
@@ -3260,6 +3270,10 @@ multi_process_incoming_link(struct multi_context *m, struct multi_instance *inst
 
                 if (mroute_flags & MROUTE_EXTRACT_SUCCEEDED)
                 {
+                    const struct openvpn_igmpv3hdr * igmphdr;
+                    if (igmphdr = (const struct openvpn_igmpv3hdr *)mcast_pkt_is_igmp(&c->c2.to_tun))
+ 		        mcast_igmp_snoop(m, m->pending, igmphdr, BEND(&c->c2.to_tun), &src);                    
+                    
                     if (multi_learn_addr(m, m->pending, &src, 0) == m->pending)
                     {
                         /* check for broadcast */

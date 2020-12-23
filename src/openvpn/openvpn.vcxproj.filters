@@ -84,6 +84,9 @@
     <ClCompile Include="mbuf.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mcast.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="misc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -336,6 +339,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mbuf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mcast.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="memdbg.h">

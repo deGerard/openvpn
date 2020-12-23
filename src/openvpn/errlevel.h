@@ -84,6 +84,7 @@
 #define D_IFCONFIG_POOL      LOGLEV(3, 35, 0)        /* show ifconfig pool info */
 #define D_AUTH               LOGLEV(3, 37, 0)        /* show user/pass auth info */
 #define D_MULTI_LOW          LOGLEV(3, 38, 0)        /* show point-to-multipoint low-freq debug info */
+#define D_MCAST_LOW          LOGLEV(3, 38, 0)        /* show point-to-multipoint low-freq debug info */
 #define D_PLUGIN             LOGLEV(3, 39, 0)        /* show plugin calls */
 #define D_MANAGEMENT         LOGLEV(3, 40, 0)        /* show --management info */
 #define D_SCHED_EXIT         LOGLEV(3, 41, 0)        /* show arming of scheduled exit */
@@ -122,6 +123,7 @@
 #define D_WIN32_IO_LOW       LOGLEV(7, 70, M_DEBUG)  /* low freq win32 I/O debugging info */
 #define D_MTU_DEBUG          LOGLEV(7, 70, M_DEBUG)  /* show MTU debugging info */
 #define D_MULTI_DEBUG        LOGLEV(7, 70, M_DEBUG)  /* show medium-freq multi debugging info */
+#define D_MCAST_DEBUG        LOGLEV(3, 70, M_DEBUG)  /* show medium-freq multi debugging info */
 #define D_MSS                LOGLEV(7, 70, M_DEBUG)  /* show MSS adjustments */
 #define D_COMP_LOW           LOGLEV(7, 70, M_DEBUG)  /* show adaptive compression state changes */
 #define D_CONNECTION_LIST    LOGLEV(7, 70, M_DEBUG)  /* show <connection> list info */

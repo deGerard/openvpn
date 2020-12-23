@@ -72,6 +72,7 @@ openvpn_SOURCES = \
 	lzo.c lzo.h \
 	manage.c manage.h \
 	mbuf.c mbuf.h \
+	mcast.c mcast.h \
 	memdbg.h \
 	misc.c misc.h \
 	platform.c platform.h \
