@@ -63,6 +63,7 @@ struct route_special_addr
 #define RTSA_REMOTE_ENDPOINT  (1<<0)
 #define RTSA_REMOTE_HOST      (1<<1)
 #define RTSA_DEFAULT_METRIC   (1<<2)
+#define RTSA_DEFAULT_TABLE    (1<<3)
     unsigned int flags;
 
     in_addr_t remote_endpoint;
@@ -70,6 +71,7 @@ struct route_special_addr
     int remote_host_local; /* TLA_x value */
     struct route_bypass bypass;
     int default_metric;
+    int default_table;
 };
 
 struct route_option {
@@ -113,6 +115,7 @@ struct route_ipv4 {
 #define RT_DEFINED        (1<<0)
 #define RT_ADDED          (1<<1)
 #define RT_METRIC_DEFINED (1<<2)
+#define RT_TABLE_DEFINED  (1<<3)
     struct route_ipv4 *next;
     unsigned int flags;
     const struct route_option *option;
@@ -120,6 +123,7 @@ struct route_ipv4 {
     in_addr_t netmask;
     in_addr_t gateway;
     int metric;
+    int table;
 };
 
 struct route_ipv6 {
@@ -129,6 +133,7 @@ struct route_ipv6 {
     unsigned int netbits;
     struct in6_addr gateway;
     int metric;
+    int table;
     /* gateway interface */
 #ifdef _WIN32
     DWORD adapter_index;        /* interface or ~0 if undefined */
@@ -282,6 +287,7 @@ bool init_route_list(struct route_list *rl,
                      const struct route_option_list *opt,
                      const char *remote_endpoint,
                      int default_metric,
+                     int default_table,
                      in_addr_t remote_host,
                      struct env_set *es,
                      openvpn_net_ctx_t *ctx);

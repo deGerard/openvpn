@@ -412,6 +412,7 @@ struct options
     const char *route_default_gateway;
     const char *route_ipv6_default_gateway;
     int route_default_metric;
+    int route_default_table;
     bool route_noexec;
     int route_delay;
     int route_delay_window;

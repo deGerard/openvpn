@@ -7069,6 +7069,11 @@ add_option(struct options *options,
         VERIFY_PERMISSION(OPT_P_ROUTE);
         options->route_default_metric = positive_atoi(p[1]);
     }
+    else if (streq(p[0], "route-table") && p[1] && !p[2])
+    {
+        VERIFY_PERMISSION(OPT_P_ROUTE);
+        options->route_default_table = positive_atoi(p[1]);
+    }
     else if (streq(p[0], "route-delay") && !p[3])
     {
         VERIFY_PERMISSION(OPT_P_ROUTE_EXTRAS);
